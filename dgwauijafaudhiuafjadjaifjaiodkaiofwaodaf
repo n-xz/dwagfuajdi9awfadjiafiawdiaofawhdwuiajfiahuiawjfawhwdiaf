@@ -1,0 +1,57 @@
+# ==============================================================================
+# Xeno.exe / Xeno Folder Cleanup Script - Windows 11
+# ==============================================================================
+
+$TargetName = "xeno"
+$TargetExe = "xeno.exe"
+
+# Define user profile paths to clean
+$Locations = @(
+    "$env:USERPROFILE\Downloads",
+    "$env:USERPROFILE\Documents",
+    "$env:USERPROFILE\Pictures",
+    "$env:USERPROFILE\Videos",
+    "$env:USERPROFILE\Music",
+    "$env:APPDATA",
+    "$env:LOCALAPPDATA"
+)
+
+Write-Host "Starting cleanup for $TargetName..." -ForegroundColor Cyan
+
+# 1. File Explorer / Folder Cleanup
+foreach ($Loc in $Locations) {
+    if (Test-Path $Loc) {
+        # Find files/folders containing "xeno"
+        Get-ChildItem -Path $Loc -Recurse -Include "*$TargetName*" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Host "Cleaned: $Loc" -ForegroundColor Gray
+    }
+}
+
+# 2. Registry Cleanup (Targeted Keys)
+$RegKeys = @(
+    "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Store",
+    "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FeatureUsage\AppSwitched",
+    "HKCR:\Local Settings\Software\Microsoft\Windows\Shell\MuiCache",
+    "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FeatureUsage\AppLaunch",
+    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FeatureUsage\ShowJumpView",
+    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FeatureUsage\AppBadgeUpdated"
+)
+
+foreach ($Key in $RegKeys) {
+    if (Test-Path $Key) {
+        Get-ItemProperty -Path $Key | Select-Object * | ForEach-Object {
+            $_.PSObject.Properties | Where-Object { $_.Name -like "*$TargetName*" } | ForEach-Object {
+                Remove-ItemProperty -Path $Key -Name $_.Name -ErrorAction SilentlyContinue
+                Write-Host "Removed Registry Value: $($_.Name) in $Key" -ForegroundColor Yellow
+            }
+        }
+    }
+}
+
+# 3. Clean Recent Items/JumpLists (Optional, but recommended)
+$Recent = "$env:APPDATA\Microsoft\Windows\Recent"
+if (Test-Path $Recent) {
+    Get-ChildItem -Path $Recent -Include "*$TargetName*" -Recurse | Remove-Item -Force -ErrorAction SilentlyContinue
+}
+
+Write-Host "Cleanup Completed. Please restart Windows Explorer or log out/in." -ForegroundColor Green
