@@ -13,7 +13,8 @@ $Locations = @(
     "$env:USERPROFILE\Videos",
     "$env:USERPROFILE\Music",
     "$env:APPDATA",
-    "$env:LOCALAPPDATA"
+    "$env:LOCALAPPDATA",
+    "$env:USERPROFILE\AppData\LocalLow"
 )
 
 Write-Host "Starting cleanup for $TargetName..." -ForegroundColor Cyan
