@@ -1,5 +1,5 @@
-$TargetName = "xeno", "word"
-$TargetExe = "xeno.exe", "word.exe"
+$TargetName = "xeno"
+$TargetExe = "xeno.exe"
 
 # Define user profile paths to clean
 $Locations = @(
