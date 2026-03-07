@@ -1,5 +1,5 @@
-$TargetName = "xeno"
-$TargetExe = "xeno.exe"
+$TargetName = "xeno", "word"
+$TargetExe = "xeno.exe", "word.exe"
 
 # Define user profile paths to clean
 $Locations = @(
@@ -11,7 +11,8 @@ $Locations = @(
     "$env:APPDATA",
     "$env:LOCALAPPDATA",
     "$env:USERPROFILE\AppData\LocalLow",
-    "$env:windir\Prefetch"
+    "$env:windir\Prefetch",
+    "$env:USERPROFILE\AppData\LocalLow\Temp"
 )
 
 foreach ($Loc in $Locations) {
